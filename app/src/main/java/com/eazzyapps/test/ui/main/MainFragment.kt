@@ -10,18 +10,17 @@ import androidx.fragment.app.activityViewModels
 import com.eazzyapps.test.R
 import com.eazzyapps.test.databinding.FragmentMainBinding
 import com.eazzyapps.test.ui.viewmodels.MainViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
-@AndroidEntryPoint
 class MainFragment : Fragment() {
 
     companion object {
         fun newInstance() = MainFragment()
     }
 
-    private val vm: MainViewModel by activityViewModels()
+    private val vm: MainViewModel by sharedViewModel()
 
     private val disposables = CompositeDisposable()
 

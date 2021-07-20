@@ -6,25 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import com.eazzyapps.test.databinding.FragmentDetailsBinding
 import com.eazzyapps.test.ui.viewmodels.DetailsViewModel
 import com.eazzyapps.test.ui.viewmodels.MainViewModel
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-@AndroidEntryPoint
 class DetailsFragment : Fragment() {
 
-    @Inject
-    lateinit var detailsViewModelFactory: DetailsViewModel.AssistedFactory
+    private val sharedVm: MainViewModel by sharedViewModel()
 
-    private val sharedVm: MainViewModel by activityViewModels()
-
-    private val vm: DetailsViewModel by viewModels {
-        DetailsViewModel.provideFactory(detailsViewModelFactory, sharedVm.selectedRepo!!)
-    }
+    private val vm: DetailsViewModel by viewModel { parametersOf(sharedVm.selectedRepo) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

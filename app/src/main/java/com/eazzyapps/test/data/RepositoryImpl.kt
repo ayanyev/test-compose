@@ -5,9 +5,8 @@ import com.eazzyapps.test.domain.Repository
 import com.eazzyapps.test.domain.models.CommitInfo
 import com.eazzyapps.test.domain.models.GitHubRepo
 import io.reactivex.rxjava3.core.Observable
-import javax.inject.Inject
 
-class RepositoryImpl @Inject constructor(private val client: RepoClient) : Repository {
+class RepositoryImpl(private val client: RepoClient) : Repository {
 
     // no pagination implemented
     override fun getPublicRepositories(owner: String): Observable<List<GitHubRepo>> {

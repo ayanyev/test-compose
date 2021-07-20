@@ -4,26 +4,19 @@ import com.eazzyapps.test.data.RemoteClient
 import com.eazzyapps.test.data.RepoClient
 import com.eazzyapps.test.data.RepositoryImpl
 import com.eazzyapps.test.domain.Repository
-import dagger.Binds
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import com.eazzyapps.test.ui.viewmodels.DetailsViewModel
+import com.eazzyapps.test.ui.viewmodels.MainViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class AppModule {
+val appModule = module {
 
-    companion object {
-        @Provides
-        fun provideRemoteClient(): RepoClient {
-            return RemoteClient.create(RepoClient::class.java)
-        }
-    }
+    single { RemoteClient.create(RepoClient::class.java) }
 
-    @Binds
-    abstract fun bindRepository(
-        repository: RepositoryImpl
-    ): Repository
+    factory <Repository> { RepositoryImpl(get()) }
+
+    viewModel { MainViewModel(get()) }
+
+    viewModel { repo -> DetailsViewModel(repo = repo.get(), get()) }
 
 }

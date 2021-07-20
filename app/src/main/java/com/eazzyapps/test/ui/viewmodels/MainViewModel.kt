@@ -5,17 +5,14 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
 import com.eazzyapps.test.domain.Repository
 import com.eazzyapps.test.domain.models.GitHubRepo
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
-import javax.inject.Inject
 
-@HiltViewModel
-class MainViewModel @Inject constructor(repo: Repository) : ViewModel() {
+class MainViewModel(repo: Repository) : ViewModel() {
 
     private val disposables = CompositeDisposable()
 

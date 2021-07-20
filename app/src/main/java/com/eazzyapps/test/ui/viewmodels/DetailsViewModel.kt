@@ -8,15 +8,13 @@ import androidx.lifecycle.ViewModelProvider
 import com.eazzyapps.test.domain.Repository
 import com.eazzyapps.test.domain.models.GitHubRepo
 import com.eazzyapps.test.ui.customviews.commitshistory.CommitsHistoryViewModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 
-class DetailsViewModel @AssistedInject constructor(
-    @Assisted repo: GitHubRepo,
+class DetailsViewModel(
+    repo: GitHubRepo,
     repository: Repository
 ) : ViewModel() {
 
@@ -71,24 +69,9 @@ class DetailsViewModel @AssistedInject constructor(
         disposables.dispose()
     }
 
-    @dagger.assisted.AssistedFactory
-    interface AssistedFactory {
-        fun create(repo: GitHubRepo): DetailsViewModel
-    }
-
     companion object {
 
         const val OWNER = "JakeWharton"
-
-        fun provideFactory(
-            assistedFactory: AssistedFactory,
-            repo: GitHubRepo
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return assistedFactory.create(repo) as T
-            }
-        }
 
     }
 
