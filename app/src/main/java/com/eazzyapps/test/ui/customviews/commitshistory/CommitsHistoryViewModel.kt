@@ -2,12 +2,14 @@ package com.eazzyapps.test.ui.customviews.commitshistory
 
 import android.util.Log
 import androidx.databinding.ObservableField
-import androidx.lifecycle.ViewModel
+import com.eazzyapps.test.common.BaseViewModel
 import com.eazzyapps.test.domain.models.CommitInfo
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.kotlin.subscribeBy
-import java.lang.IllegalArgumentException
+import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.channels.ticker
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -15,7 +17,7 @@ import java.util.concurrent.TimeUnit
 class CommitsHistoryViewModel(
     commits: List<CommitInfo>,
     private val updateFrequencyInMillis: Long = 1_500
-) : ViewModel() {
+) : BaseViewModel() {
 
     val monthOne = ObservableField<MonthViewModel>()
 
@@ -45,19 +47,18 @@ class CommitsHistoryViewModel(
     fun startRotate() {
         val chunksCount = monthlyViewModels.size
         Log.d(javaClass.simpleName, "months=$chunksCount")
-        disposable = Observable.interval(0, updateFrequencyInMillis, TimeUnit.MILLISECONDS)
-            .subscribeBy(
-                onNext = {
-                    monthOne.set(monthlyViewModels[currentChunk][0])
-                    monthTwo.set(monthlyViewModels.getOrNull(currentChunk)?.getOrNull(1))
-                    monthThee.set(monthlyViewModels.getOrNull(currentChunk)?.getOrNull(2))
-                    if (currentChunk == chunksCount - 1) currentChunk = 0
-                    else currentChunk++
-                },
-                onError = {
-                    Log.e(javaClass.simpleName, it.message ?: "No message", it)
-                }
-            )
+
+        val tickerChannel = ticker(delayMillis = updateFrequencyInMillis, initialDelayMillis = 0)
+
+        launch {
+            for (event in tickerChannel) {
+                monthOne.set(monthlyViewModels[currentChunk][0])
+                monthTwo.set(monthlyViewModels.getOrNull(currentChunk)?.getOrNull(1))
+                monthThee.set(monthlyViewModels.getOrNull(currentChunk)?.getOrNull(2))
+                if (currentChunk == chunksCount - 1) currentChunk = 0
+                else currentChunk++
+            }
+        }
     }
 
     fun stopRotate() {

@@ -4,14 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.eazzyapps.test.R
 import com.eazzyapps.test.databinding.FragmentMainBinding
 import com.eazzyapps.test.ui.viewmodels.MainViewModel
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.kotlin.subscribeBy
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filter
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class MainFragment : Fragment() {
@@ -22,8 +23,6 @@ class MainFragment : Fragment() {
 
     private val vm: MainViewModel by sharedViewModel()
 
-    private val disposables = CompositeDisposable()
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -33,25 +32,23 @@ class MainFragment : Fragment() {
             supportActionBar?.setDisplayHomeAsUpEnabled(false)
         }
         return FragmentMainBinding.inflate(inflater, container, false)
-            .apply { this.viewModel = vm }
-            .root
+            .apply { this.viewModel = vm }.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        disposables.add(
-            vm.itemClicks
-                .subscribeBy {
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.container, DetailsFragment.newInstance())
-                        .addToBackStack(null)
-                        .commit()
-                }
-        )
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        disposables.dispose()
+        lifecycleScope.launchWhenResumed {
+            vm.clickFlow.filter { it }.collect {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.container, DetailsFragment.newInstance())
+                    .addToBackStack(null)
+                    .commit()
+            }
+        }
+        lifecycleScope.launchWhenResumed {
+            vm.errorFlow.collect {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+            }
+        }
     }
 }

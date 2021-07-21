@@ -31,16 +31,6 @@
             app:visible="@{viewModel.isLoading}"
             tools:visibility="visible" />
 
-        <com.google.android.material.textview.MaterialTextView
-            style="@style/TextAppearance.MaterialComponents.Caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@{viewModel.errorMsg}"
-            app:visible="@{viewModel.errorMsgVisibility}"
-            tools:text="Some error message!!!"
-            tools:visibility="visible" />
-
     </FrameLayout>
 
 </layout>

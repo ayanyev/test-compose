@@ -1,24 +1,16 @@
 package com.eazzyapps.test.ui.viewmodels
 
-import android.util.Log
-import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import com.eazzyapps.test.common.BaseViewModel
 import com.eazzyapps.test.domain.Repository
 import com.eazzyapps.test.domain.models.GitHubRepo
 import com.eazzyapps.test.ui.customviews.commitshistory.CommitsHistoryViewModel
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.kotlin.subscribeBy
-import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.launch
 
 class DetailsViewModel(
     repo: GitHubRepo,
     repository: Repository
-) : ViewModel() {
-
-    private val disposables = CompositeDisposable()
+) : BaseViewModel() {
 
     val id: String = "${repo.id}"
 
@@ -32,28 +24,20 @@ class DetailsViewModel(
 
     val date: String = repo.createdAt ?: "no date"
 
-    val isLoading = ObservableBoolean(false)
-
     private var commitsVm: CommitsHistoryViewModel? = null
 
     val commitsViewModel = ObservableField<CommitsHistoryViewModel>(commitsVm)
 
     init {
 
-        disposables.add(
-            repository.getRepositoryCommits(OWNER, repo.name)
-                .doOnSubscribe { isLoading.set(true) }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext { isLoading.set(false) }
-                .subscribeBy(
-                    onNext = { commits ->
-                        commitsVm = CommitsHistoryViewModel(commits)
-                        commitsViewModel.set(commitsVm)
-                    },
-                    onError = { e -> Log.e(javaClass.simpleName, e.message ?: "smth happened") }
-                )
-        )
+        launch {
+            isLoading.set(true)
+            repository.getRepositoryCommits(OWNER, repo.name).also { commits ->
+                commitsVm = CommitsHistoryViewModel(commits)
+                commitsViewModel.set(commitsVm)
+            }
+            isLoading.set(false)
+        }
 
     }
 
@@ -63,10 +47,6 @@ class DetailsViewModel(
 
     fun onPause() {
         commitsVm?.stopRotate()
-    }
-
-    override fun onCleared() {
-        disposables.dispose()
     }
 
     companion object {
