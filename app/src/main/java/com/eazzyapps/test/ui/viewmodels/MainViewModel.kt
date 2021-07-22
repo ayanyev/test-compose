@@ -1,43 +1,40 @@
 package com.eazzyapps.test.ui.viewmodels
 
-import androidx.databinding.ObservableField
+import com.eazzyapps.test.common.ActivityDelegate
 import com.eazzyapps.test.common.BaseViewModel
 import com.eazzyapps.test.domain.Repository
-import com.eazzyapps.test.domain.models.GitHubRepo
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import com.eazzyapps.test.navigation.Screen
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class MainViewModel(repo: Repository) : BaseViewModel() {
+class MainViewModel(
 
-    private val _clickFlow = MutableSharedFlow<Boolean>()
+    repo: Repository,
+    delegate: ActivityDelegate
 
-    val clickFlow = _clickFlow.asSharedFlow()
+) : BaseViewModel(delegate) {
 
-    val publicRepos = ObservableField<List<RepoItemViewModel>>()
+    private val _reposFlow = MutableStateFlow<List<RepoItemViewModel>>(listOf())
 
-    var selectedRepo: GitHubRepo? = null
-        private set(value) {
-            field = value
-            launch {
-                _clickFlow.emit(true)
-            }
-        }
+    val reposFlow = _reposFlow.asStateFlow()
 
     init {
 
         launch {
-            isLoading.set(true)
+            delegate.showLoading(true)
             repo.getPublicRepositories(OWNER).also { repos ->
                 val reposVM = repos.map { repo ->
                     RepoItemViewModel(
                         repo = repo,
-                        onClick = { selectedRepo = it }
+                        onClick = {
+                            delegate.navigate(Screen.Details(repo))
+                        }
                     )
                 }
-                publicRepos.set(reposVM)
+                _reposFlow.value = reposVM
             }
-            isLoading.set(false)
+            delegate.showLoading(false)
         }
     }
 

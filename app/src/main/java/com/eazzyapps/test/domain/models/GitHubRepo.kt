@@ -1,5 +1,9 @@
 package com.eazzyapps.test.domain.models
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class GitHubRepo(
     val id: Int,
     val name: String,
@@ -11,4 +15,4 @@ data class GitHubRepo(
     val forks: Int,
     val stars: Int,
     val watchers: Int
-)
+) : Parcelable

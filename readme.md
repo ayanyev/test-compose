@@ -47,28 +47,32 @@ Animate the height changes in the bar with each new update.
 
 #### Implementation description
 
-All tasks including bonus task are implemented according to requirements.
+This work is based on other project, so initial and final implementation
+(first and last commits) are completely different and can be examined separately
 
 ###### Used libraries
 * RxJava 3 + RxAndroid + RxKotlin
+* coroutines
 * Retrofit 2 + OkHttp + Moshi
-* Hilt 
-* Jetpack libraries (viewModel, fragment-ktx, constraintLayout)
+* Hilt / Koin
+* Jetpack libraries (viewModel, fragment-ktx, constraintLayout, compose)
 ###### Used solutions
-* MVVM
-* databinding
-* dependency injection
 * clean architecture (domain/data/ui separation)
-* custom view (ui) creation without subclassing View/ViewGroup 
+* MVVM
+* dependency injection (Hilt -> Koin)
+* threading (Rx -> coroutines)
+* reactive (Rx -> flows)
+* ui (databinding -> Compose)
 * custom chart view and list creation was done with the help of databinding
-* shared view model used instead of passing repository object as fragment parameter
-###### Not done but "must have" in real app
+###### Not done
 * proper exception handling
-* pagination for repositories list
-* camel case naming of dto models fields
-* proper navigation (usage of Navigation component)
+* proper pagination
+* proper dependency management
+* MVI
+* testing
 ###### Hint for testers
-In order to avoid GitHub API restriction for non-authorized requests, please 
+1. Be sure that project is running at least on Android Studio Arctic Fox RC1
+2. In order to avoid GitHub API restriction for non-authorized requests, please
 add your GitHub API token into :app build.gradle file
 ```groovy
 buildConfigField("String", "TOKEN", "\"<token goes here>\"")

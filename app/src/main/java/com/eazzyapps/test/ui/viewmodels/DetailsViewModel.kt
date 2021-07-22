@@ -1,57 +1,37 @@
 package com.eazzyapps.test.ui.viewmodels
 
-import androidx.databinding.ObservableField
+import com.eazzyapps.test.common.ActivityDelegate
 import com.eazzyapps.test.common.BaseViewModel
 import com.eazzyapps.test.domain.Repository
 import com.eazzyapps.test.domain.models.GitHubRepo
-import com.eazzyapps.test.ui.customviews.commitshistory.CommitsHistoryViewModel
-import kotlinx.coroutines.launch
 
 class DetailsViewModel(
+
     repo: GitHubRepo,
-    repository: Repository
-) : BaseViewModel() {
+    repository: Repository,
+    delegate: ActivityDelegate
 
-    val id: String = "${repo.id}"
+) : BaseViewModel(delegate) {
 
-    val name: String = repo.name
+    val info = Info(repo)
 
-    val owner: String = repo.owner
+    private val commitsVm = CommitsHistoryViewModel(repo, repository, delegate)
 
-    val desc: String = repo.description ?: "no description provided"
+    val commits = commitsVm.monthFlow
 
-    val license: String = repo.license ?: "no license selected"
+    class Info(repo: GitHubRepo) {
 
-    val date: String = repo.createdAt ?: "no date"
+        val id: String = "${repo.id}"
 
-    private var commitsVm: CommitsHistoryViewModel? = null
+        val name: String = repo.name
 
-    val commitsViewModel = ObservableField<CommitsHistoryViewModel>(commitsVm)
+        val owner: String = repo.owner
 
-    init {
+        val desc: String = repo.description ?: "no description provided"
 
-        launch {
-            isLoading.set(true)
-            repository.getRepositoryCommits(OWNER, repo.name).also { commits ->
-                commitsVm = CommitsHistoryViewModel(commits)
-                commitsViewModel.set(commitsVm)
-            }
-            isLoading.set(false)
-        }
+        val license: String = repo.license ?: "no license selected"
 
-    }
-
-    fun onResume() {
-        commitsVm?.startRotate()
-    }
-
-    fun onPause() {
-        commitsVm?.stopRotate()
-    }
-
-    companion object {
-
-        const val OWNER = "JakeWharton"
+        val date: String = repo.createdAt ?: "no date"
 
     }
 

@@ -7,4 +7,5 @@
     <string name="repo_license">License</string>
     <string name="repo_description">Description</string>
     <string name="commits_history_title">Commits monthly distribution</string>
+    <string name="error_template">Error: %s</string>
 </resources>

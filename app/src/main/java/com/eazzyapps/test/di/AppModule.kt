@@ -1,12 +1,12 @@
 package com.eazzyapps.test.di
 
+import com.eazzyapps.test.common.ActivityDelegate
 import com.eazzyapps.test.data.RemoteClient
 import com.eazzyapps.test.data.RepoClient
 import com.eazzyapps.test.data.RepositoryImpl
 import com.eazzyapps.test.domain.Repository
 import com.eazzyapps.test.ui.viewmodels.DetailsViewModel
 import com.eazzyapps.test.ui.viewmodels.MainViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -19,8 +19,14 @@ val appModule = module {
 
     factory <Repository> { RepositoryImpl(get(), get()) }
 
-    viewModel { MainViewModel(get()) }
+    single {
+        // TODO keep an eye on if delegate singleton works fine
+        //  if there are more then one Activity in app
+        ActivityDelegate()
+    }
 
-    viewModel { repo -> DetailsViewModel(repo = repo.get(), get()) }
+    viewModel { MainViewModel(get(), get()) }
+
+    viewModel { repo -> DetailsViewModel(repo = repo.get(), get(), get()) }
 
 }

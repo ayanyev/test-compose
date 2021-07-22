@@ -1,33 +1,37 @@
 package com.eazzyapps.test.common
 
-import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.eazzyapps.test.R
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlin.coroutines.CoroutineContext
 
-abstract class BaseViewModel : ViewModel(), CoroutineScope {
+abstract class BaseViewModel(
 
-    val isLoading = ObservableBoolean(false)
+    private val delegate: ActivityDelegate
 
-    private val _errorFlow = MutableSharedFlow<String>()
-
-    val errorFlow = _errorFlow.asSharedFlow()
+) : ViewModel(), CoroutineScope {
 
     private val handler = CoroutineExceptionHandler { _, throwable ->
-        launch {
-            showError(throwable)
-        }
+        showError(throwable)
     }
 
     override val coroutineContext: CoroutineContext
         get() = viewModelScope.plus(SupervisorJob()).plus(handler).coroutineContext
 
-    protected suspend fun showError(e: Throwable) {
-        isLoading.set(false)
-        _errorFlow.emit(e.message ?: "Unknown error")
+    private fun showError(e: Throwable) {
+        delegate.showLoading(false)
+        delegate.showMessage(
+            Message.SnackBar(
+                R.string.error_template,
+                e.message ?: "Unknown error"
+            )
+        )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        cancel()
+        delegate.showLoading(false)
     }
 }
