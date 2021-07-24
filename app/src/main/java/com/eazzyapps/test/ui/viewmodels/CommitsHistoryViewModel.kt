@@ -9,6 +9,7 @@ import com.eazzyapps.test.domain.models.GitHubRepo
 import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -38,7 +39,7 @@ class CommitsHistoryViewModel(
 
         val commitsCountMap = commits
             .groupBy(
-                keySelector = { it.date.parseToMonthYear() },
+                keySelector = { it.date.parseToMonthYear(Locale.getDefault()) },
                 valueTransform = { 1 }
             )
             .mapValues { (_, v) -> v.sum() }
@@ -65,13 +66,12 @@ class CommitsHistoryViewModel(
             else currentChunk++
         }
     }
+}
 
-    private fun String.parseToMonthYear(): String {
-        val fromFormat = "yyyy-MM-dd'T'HH:mm:ss"
-        val toFormat = "MMMyy"
-        return SimpleDateFormat(fromFormat, Locale.getDefault()).parse(this)?.let { date ->
-            SimpleDateFormat(toFormat, Locale.getDefault()).format(date)
-        } ?: throw IllegalArgumentException("Commit date not parsed: $this")
-    }
-
+fun String.parseToMonthYear(local: Locale): String {
+    val fromFormat = "yyyy-MM-dd'T'HH:mm:ss"
+    val toFormat = "MMMyy"
+    return SimpleDateFormat(fromFormat, local).parse(this)?.let { date ->
+        SimpleDateFormat(toFormat, local).format(date)
+    } ?: throw ParseException("Commit date not parsed: $this", 0)
 }
