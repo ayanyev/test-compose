@@ -75,5 +75,5 @@ This work is based on other project, so initial and final implementation
 2. In order to avoid GitHub API restriction for non-authorized requests, please
 add your GitHub API token into :app build.gradle file
 ```groovy
-buildConfigField("String", "TOKEN", "\"<token goes here>\"")
+def githubToken = localProperties.getProperty('github_token') ?: "<token goes here>"
 ```
