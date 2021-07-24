@@ -1,3 +1,3 @@
 package com.eazzyapps.test
 
-const val OWNER = "JakeWharton"
+const val ACCOUNT_OWNER = "JakeWharton"

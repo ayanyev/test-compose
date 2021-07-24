@@ -1,5 +1,6 @@
-package com.eazzyapps.test.ui.viewmodels
+package com.eazzyapps.test
 
+import com.eazzyapps.test.ui.viewmodels.parseToMonthYear
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith

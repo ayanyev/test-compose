@@ -10,9 +10,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class ActivityDelegate : CoroutineScope {
-
-    override val coroutineContext = CoroutineScope(Dispatchers.Main.immediate).coroutineContext
+class ActivityDelegate {
 
     // loading
 
@@ -20,11 +18,9 @@ class ActivityDelegate : CoroutineScope {
 
     val loadingFlow = _loadingFlow.asStateFlow()
 
-    fun showLoading(isLoading: Boolean) {
-        launch {
-            throttleLoadingInterval(isLoading)
-            _loadingFlow.value = isLoading
-        }
+    suspend fun showLoading(isLoading: Boolean) {
+        throttleLoadingInterval(isLoading)
+        _loadingFlow.value = isLoading
     }
 
     private val minLoadingInterval = 1000L
@@ -45,10 +41,8 @@ class ActivityDelegate : CoroutineScope {
 
     val msgFlow = _msgFlow.asSharedFlow()
 
-    fun showMessage(msg: Message) {
-        launch {
-            _msgFlow.emit(msg)
-        }
+    suspend fun showMessage(msg: Message) {
+        _msgFlow.emit(msg)
     }
 
     // navigating
@@ -57,13 +51,11 @@ class ActivityDelegate : CoroutineScope {
 
     val navFlow = _navFlow.asSharedFlow()
 
-    fun navigate(event: Screen) {
-        launch {
-            _navFlow.emit(event)
-        }
+    suspend fun navigate(event: Screen) {
+        _navFlow.emit(event)
     }
 
-    fun navigateBack() {
+    suspend fun navigateBack() {
         navigate(Screen.Previous)
     }
 

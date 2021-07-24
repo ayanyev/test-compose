@@ -1,6 +1,6 @@
 package com.eazzyapps.test.ui.viewmodels
 
-import com.eazzyapps.test.OWNER
+import com.eazzyapps.test.ACCOUNT_OWNER
 import com.eazzyapps.test.common.ActivityDelegate
 import com.eazzyapps.test.common.BaseViewModel
 import com.eazzyapps.test.domain.Repository
@@ -28,7 +28,7 @@ class CommitsHistoryViewModel(
     init {
         launch {
             delegate.showLoading(true)
-            val commits = repository.getRepositoryCommits(OWNER, repo.name)
+            val commits = repository.getRepositoryCommits(ACCOUNT_OWNER, repo.name)
             startRotate(commits)
         }
     }
