@@ -8,14 +8,11 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Level
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 object RemoteClient {
 
     private const val baseUrl = "https://api.github.com/"
-
-    private val rxAdapter = RxJava3CallAdapterFactory.create()
 
     private val moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
@@ -40,7 +37,6 @@ object RemoteClient {
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
-        .addCallAdapterFactory(rxAdapter)
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .client(httpClient)
         .build()

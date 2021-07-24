@@ -2,8 +2,6 @@ package com.eazzyapps.test.data
 
 import com.eazzyapps.test.data.models.CommitInfoDto
 import com.eazzyapps.test.data.models.GitHubRepoDto
-import io.reactivex.rxjava3.core.Observable
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -17,5 +15,7 @@ interface RepoClient {
     ): List<GitHubRepoDto>
 
     @GET
-    suspend fun getRepositoryCommits(@Url url: String): Response<List<CommitInfoDto>>
+    suspend fun getRepositoryCommits(
+        @Url url: String
+    ): Response<List<CommitInfoDto>>
 }
