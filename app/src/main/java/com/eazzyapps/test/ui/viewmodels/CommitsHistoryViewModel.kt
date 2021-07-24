@@ -1,11 +1,11 @@
 package com.eazzyapps.test.ui.viewmodels
 
+import com.eazzyapps.test.OWNER
 import com.eazzyapps.test.common.ActivityDelegate
 import com.eazzyapps.test.common.BaseViewModel
 import com.eazzyapps.test.domain.Repository
 import com.eazzyapps.test.domain.models.CommitInfo
 import com.eazzyapps.test.domain.models.GitHubRepo
-import com.eazzyapps.test.ui.viewmodels.MainViewModel.Companion.OWNER
 import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch

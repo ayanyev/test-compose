@@ -1,5 +1,6 @@
 package com.eazzyapps.test.ui.viewmodels
 
+import com.eazzyapps.test.OWNER
 import com.eazzyapps.test.common.ActivityDelegate
 import com.eazzyapps.test.common.BaseViewModel
 import com.eazzyapps.test.domain.Repository
@@ -36,12 +37,6 @@ class MainViewModel(
             }
             delegate.showLoading(false)
         }
-    }
-
-    companion object {
-
-        const val OWNER = "JakeWharton"
-
     }
 
 }
