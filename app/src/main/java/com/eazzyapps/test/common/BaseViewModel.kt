@@ -13,13 +13,13 @@ abstract class BaseViewModel(
 ) : ViewModel(), CoroutineScope {
 
     private val handler = CoroutineExceptionHandler { _, throwable ->
-        launch { showError(throwable) }
+        launch { handleError(throwable) }
     }
 
     override val coroutineContext: CoroutineContext
         get() = viewModelScope.plus(SupervisorJob()).plus(handler).coroutineContext
 
-    suspend fun showError(e: Throwable) {
+    open suspend fun handleError(e: Throwable) {
         delegate.showLoading(false)
         delegate.showMessage(
             Message.SnackBar(
