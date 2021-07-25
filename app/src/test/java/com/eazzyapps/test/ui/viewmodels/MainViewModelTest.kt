@@ -4,8 +4,8 @@ import com.eazzyapps.test.ACCOUNT_OWNER
 import com.eazzyapps.test.TestCoroutineRule
 import com.eazzyapps.test.common.ActivityDelegate
 import com.eazzyapps.test.domain.Repository
-import com.eazzyapps.test.fakeRepoViewModelsList
-import com.eazzyapps.test.fakeRepositoriesList
+import com.eazzyapps.test.data.fakeRepoViewModelsList
+import com.eazzyapps.test.data.fakeRepositoriesList
 import io.mockk.coEvery
 import io.mockk.coVerifyOrder
 import io.mockk.mockk

@@ -8,4 +8,7 @@
     <string name="repo_description">Description</string>
     <string name="commits_history_title">Commits monthly distribution</string>
     <string name="error_template">Error: %s</string>
+    <string name="cont_desc_icon_watchers">watchers count</string>
+    <string name="cont_desc_icon_stars">stars count</string>
+    <string name="cont_desc_icon_forks">forks count</string>
 </resources>

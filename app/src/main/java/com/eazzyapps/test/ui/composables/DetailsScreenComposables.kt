@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.eazzyapps.test.data.fakeRepository
 import com.eazzyapps.test.domain.models.GitHubRepo
 import com.eazzyapps.test.ui.viewmodels.DetailsViewModel
 import org.koin.androidx.compose.getViewModel
@@ -59,7 +60,7 @@ fun DetailsScreen(repo: GitHubRepo) {
 @Preview
 @Composable
 fun DetailsScreenPreview() {
-    RepoDetails(Modifier, DetailsViewModel.Info(sampleRepo))
+    RepoDetails(Modifier, DetailsViewModel.Info(fakeRepository))
 }
 
 @Composable

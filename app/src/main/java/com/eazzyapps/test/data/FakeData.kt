@@ -1,5 +1,6 @@
-package com.eazzyapps.test
+package com.eazzyapps.test.data
 
+import com.eazzyapps.test.ACCOUNT_OWNER
 import com.eazzyapps.test.domain.models.CommitInfo
 import com.eazzyapps.test.domain.models.GitHubRepo
 import com.eazzyapps.test.ui.viewmodels.RepoItemViewModel
@@ -18,6 +19,8 @@ val fakeRepository = GitHubRepo(
     stars = 23,
     forks = 5
 )
+
+val fakeRepositoryViewModel = RepoItemViewModel(fakeRepository) {}
 
 val fakeRepositoriesList = listOf(
     fakeRepository, fakeRepository, fakeRepository,
