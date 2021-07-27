@@ -1,6 +1,7 @@
 package com.eazzyapps.test
 
 import android.app.Application
+import com.eazzyapps.repositories.di.repositoryModule
 import com.eazzyapps.test.di.appModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -13,7 +14,10 @@ class TestApplication : Application() {
         startKoin {
             androidLogger()
             androidContext(this@TestApplication)
-            modules(appModule)
+            modules(
+                appModule,
+                repositoryModule
+            )
         }
     }
 }

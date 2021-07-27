@@ -1,2 +1,5 @@
 rootProject.name = "Github test"
 include ':app'
+include ':feature-repositories'
+include ':common'
+include ':platform'

@@ -5,15 +5,25 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.10"
-        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.38'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.10'
     }
 }
 
-allprojects {
+subprojects {
     repositories {
         google()
         mavenCentral()
+    }
+
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions {
+            jvmTarget = "1.8"
+            freeCompilerArgs += '-Xopt-in=kotlin.RequiresOptIn'
+            freeCompilerArgs += '-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi'
+            freeCompilerArgs += '-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi'
+            freeCompilerArgs += '-Xopt-in=kotlinx.coroutines.FlowPreview'
+            freeCompilerArgs += '-Xopt-in=kotlin.Experimental'
+        }
     }
 }
 
