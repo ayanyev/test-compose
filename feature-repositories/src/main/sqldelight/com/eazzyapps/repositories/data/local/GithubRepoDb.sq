@@ -1,0 +1,25 @@
+CREATE TABLE repos (
+id INTEGER NOT NULL,
+description TEXT,
+license TEXT,
+createdAt TEXT,
+authorName TEXT NOT NULL,
+ownerLogin TEXT NOT NULL,
+authorAvatarUrl TEXT,
+forksCount INTEGER NOT NULL,
+stargazersCount INTEGER NOT NULL,
+watchersCount INTEGER NOT NULL
+);
+
+selectAll:
+SELECT *
+FROM repos;
+
+selectById:
+SELECT *
+FROM repos
+WHERE id=?;
+
+insertAll:
+INSERT INTO repos
+VALUES ?;
