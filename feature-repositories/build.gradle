@@ -3,6 +3,8 @@ plugins {
     id 'kotlin-android'
     id "kotlin-parcelize"
     id "kotlin-kapt"
+    id "com.squareup.sqldelight"
+
 }
 
 Properties localProperties = new Properties()
@@ -71,6 +73,9 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp"
     implementation "com.squareup.okhttp3:logging-interceptor"
     implementation "com.squareup.moshi:moshi-kotlin"
+
+    implementation "com.squareup.sqldelight:android-driver"
+    implementation "com.squareup.sqldelight:coroutines-extensions-jvm"
 
     testImplementation "junit:junit"
     testImplementation "io.mockk:mockk"

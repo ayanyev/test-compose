@@ -29,6 +29,9 @@ dependencies {
         api "com.squareup.okhttp3:logging-interceptor:4.9.1"
         api "com.squareup.moshi:moshi-kotlin:1.12.0"
 
+        api "com.squareup.sqldelight:android-driver:1.5.0"
+        api "com.squareup.sqldelight:coroutines-extensions-jvm:1.5.0"
+
         api "junit:junit:4.13.2"
         api "androidx.test:core:1.4.0"
         api "io.mockk:mockk:1.12.0"

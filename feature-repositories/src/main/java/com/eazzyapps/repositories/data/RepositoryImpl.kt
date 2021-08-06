@@ -1,5 +1,6 @@
 package com.eazzyapps.repositories.data
 
+import com.eazzyapps.repositories.Database
 import com.eazzyapps.repositories.data.remote.retrofit.models.toDomain
 import com.eazzyapps.repositories.data.remote.retrofit.RepoClient
 import com.eazzyapps.repositories.domain.Repository
@@ -9,6 +10,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
 class RepositoryImpl(
+    private val db: Database,
     private val client: RepoClient,
     private val dispatcher: CoroutineDispatcher
 ) : Repository {
