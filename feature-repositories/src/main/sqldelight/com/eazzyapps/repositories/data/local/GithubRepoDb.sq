@@ -1,11 +1,11 @@
-CREATE TABLE repos (
+CREATE TABLE GitHubRepoLocal (
 id INTEGER NOT NULL,
 description TEXT,
 license TEXT,
 createdAt TEXT,
 authorName TEXT NOT NULL,
 ownerLogin TEXT NOT NULL,
-authorAvatarUrl TEXT,
+authorAvatarUrl TEXT NOT NULL,
 forksCount INTEGER NOT NULL,
 stargazersCount INTEGER NOT NULL,
 watchersCount INTEGER NOT NULL
@@ -13,13 +13,13 @@ watchersCount INTEGER NOT NULL
 
 selectAll:
 SELECT *
-FROM repos;
+FROM GitHubRepoLocal;
 
 selectById:
 SELECT *
-FROM repos
+FROM GitHubRepoLocal
 WHERE id=?;
 
-insertAll:
-INSERT INTO repos
+insert:
+INSERT INTO GitHubRepoLocal
 VALUES ?;

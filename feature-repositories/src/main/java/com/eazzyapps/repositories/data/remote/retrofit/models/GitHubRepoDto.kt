@@ -1,5 +1,7 @@
 package com.eazzyapps.repositories.data.remote.retrofit.models
 
+import com.eazzyapps.repositories.data.local.GitHubRepoLocal
+
 data class GitHubRepoDto(
     val id: Int,
     val name: String,
@@ -20,3 +22,18 @@ data class Owner(
 data class License(
     val name: String
 )
+
+fun GitHubRepoDto.toLocal() = GitHubRepoLocal(
+    id = id.toLong(),
+    authorName = name,
+    description = description,
+    ownerLogin = owner.login,
+    authorAvatarUrl = owner.avatar_url,
+    createdAt = createdAt,
+    license = license?.name,
+    forksCount = forks_count.toLong(),
+    stargazersCount = stargazers_count.toLong(),
+    watchersCount = watchers_count.toLong()
+)
+
+fun List<GitHubRepoDto>.toLocal() = map { it.toLocal() }

@@ -28,7 +28,7 @@ class CommitsHistoryViewModel(
     init {
         launch {
             delegate.showLoading(true)
-            val commits = repository.getRepositoryCommits(ACCOUNT_OWNER, repo.name)
+            val commits = repository.getRepositoryCommits(repo)
             startRotate(commits)
         }
     }

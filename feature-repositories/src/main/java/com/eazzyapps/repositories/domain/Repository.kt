@@ -7,6 +7,8 @@ interface Repository {
 
     suspend fun getPublicRepositories(owner: String): List<GitHubRepo>
 
-    suspend fun getRepositoryCommits(owner: String, repoName: String): List<CommitInfo>
+    suspend fun getRepositoryById(id: Int): GitHubRepo
+
+    suspend fun getRepositoryCommits(repo: GitHubRepo): List<CommitInfo>
 
 }
