@@ -4,20 +4,37 @@ import com.eazzyapps.repositories.domain.Repository
 import com.eazzyapps.repositories.domain.models.GitHubRepo
 import com.eazzyapps.test.common.ActivityDelegate
 import com.eazzyapps.test.common.BaseViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class DetailsViewModel(
 
-    repo: GitHubRepo,
+    repoId: Int,
     repository: Repository,
     delegate: ActivityDelegate
 
 ) : BaseViewModel(delegate) {
 
-    val info = Info(repo)
+    private val infoFlow = MutableStateFlow<Info?>(null)
 
-    private val commitsVm = CommitsHistoryViewModel(repo, repository, delegate)
+    private val commitsVm = CommitsHistoryViewModel(repository, delegate)
 
-    val commits = commitsVm.monthFlow
+    val info = infoFlow.asStateFlow()
+
+    val commits = commitsVm.monthFlow.asStateFlow()
+
+    init {
+
+        launch {
+            repository.getRepositoryById(repoId).also { repo ->
+                commitsVm.setRepository(repo)
+            }
+        }
+
+    }
 
     class Info(repo: GitHubRepo) {
 

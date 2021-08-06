@@ -1,6 +1,5 @@
 package com.eazzyapps.repositories.ui.viewmodels
 
-import com.eazzyapps.repositories.ACCOUNT_OWNER
 import com.eazzyapps.repositories.domain.Repository
 import com.eazzyapps.repositories.domain.models.CommitInfo
 import com.eazzyapps.repositories.domain.models.GitHubRepo
@@ -15,8 +14,7 @@ import java.util.*
 
 class CommitsHistoryViewModel(
 
-    repo: GitHubRepo,
-    repository: Repository,
+    private val repository: Repository,
     private val delegate: ActivityDelegate
 
 ) : BaseViewModel(delegate) {
@@ -25,7 +23,7 @@ class CommitsHistoryViewModel(
 
     private val updateFrequencyInMillis: Long = 1_500
 
-    init {
+    fun setRepository(repo: GitHubRepo) {
         launch {
             delegate.showLoading(true)
             val commits = repository.getRepositoryCommits(repo)

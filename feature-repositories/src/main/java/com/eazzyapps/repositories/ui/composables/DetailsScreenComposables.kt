@@ -23,7 +23,9 @@ fun DetailsScreen(repo: GitHubRepo) {
 
     val vm = getViewModel<DetailsViewModel> { parametersOf(repo) }
 
-    val commitsInfo by vm.commits.collectAsState()
+    val info by vm.info.collectAsState()
+
+    val commits by vm.commits.collectAsState()
 
     when (LocalConfiguration.current.orientation) {
         Configuration.ORIENTATION_PORTRAIT -> {
@@ -32,8 +34,11 @@ fun DetailsScreen(repo: GitHubRepo) {
                     .fillMaxSize()
                     .padding(16.dp),
             ) {
-                RepoDetails(Modifier.fillMaxWidth(), vm.info)
-                CommitsChart(commits = commitsInfo)
+                RepoDetails(
+                    modifier = Modifier.fillMaxWidth(),
+                    info = info
+                )
+                CommitsChart(commits = commits)
             }
         }
         else -> {
@@ -46,11 +51,12 @@ fun DetailsScreen(repo: GitHubRepo) {
                     .padding(16.dp),
             ) {
                 RepoDetails(
-                    Modifier
+                    modifier = Modifier
                         .fillMaxWidth(fraction = 0.5f)
-                        .verticalScroll(scrollState), vm.info
+                        .verticalScroll(scrollState),
+                    info = info
                 )
-                CommitsChart(Modifier.fillMaxSize(), commits = commitsInfo)
+                CommitsChart(Modifier.fillMaxSize(), commits = commits)
             }
         }
     }
@@ -64,8 +70,8 @@ fun DetailsScreenPreview() {
 }
 
 @Composable
-fun RepoDetails(modifier: Modifier, info: DetailsViewModel.Info) {
-
+fun RepoDetails(modifier: Modifier, info: DetailsViewModel.Info?) {
+    if (info == null) return
     Column(
         Modifier
             .wrapContentHeight()
