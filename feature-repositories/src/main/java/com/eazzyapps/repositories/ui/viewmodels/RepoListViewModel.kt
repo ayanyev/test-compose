@@ -2,8 +2,7 @@ package com.eazzyapps.repositories.ui.viewmodels
 
 import com.eazzyapps.repositories.ACCOUNT_OWNER
 import com.eazzyapps.repositories.domain.Repository
-import com.eazzyapps.repositories.domain.models.GitHubRepo
-import com.eazzyapps.repositories.ui.navigation.RepositoryScreen
+import com.eazzyapps.repositories.ui.navigation.RepositoryScreen.RepoDetailsScreen
 import com.eazzyapps.test.common.ActivityDelegate
 import com.eazzyapps.test.common.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +28,7 @@ class RepoListViewModel(
                 val reposVM = repos.map { repo ->
                     RepoItemViewModel(
                         repo = repo,
-                        onClick = { showDetails(it) }
+                        onClick = { showDetails(repo.id) }
                     )
                 }
                 _reposFlow.value = reposVM
@@ -38,8 +37,8 @@ class RepoListViewModel(
         }
     }
 
-    private fun showDetails(repo: GitHubRepo) {
-        launch { delegate.navigate(RepositoryScreen.RepoDetails(repo)) }
+    private fun showDetails(repoId: Int) {
+        launch { delegate.navigate(RepoDetailsScreen.withRouteArgs(repoId)) }
     }
 
 }

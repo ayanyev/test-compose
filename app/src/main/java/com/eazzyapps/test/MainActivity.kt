@@ -13,7 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.eazzyapps.repositories.ui.theme.AppTheme
 import com.eazzyapps.test.common.ActivityDelegate
 import com.eazzyapps.test.common.Previous
-import com.eazzyapps.test.common.navigate
+import com.eazzyapps.test.common.navigateTo
 import com.eazzyapps.test.navigation.AppNavHost
 import com.eazzyapps.test.ui.AppTopBar
 import com.eazzyapps.test.ui.ProgressIndicator
@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
                     // dismiss current snackbar before navigate
                     scaffoldState.snackbarHostState.currentSnackbarData?.dismiss()
                     if (screen is Previous) controller.navigateUp()
-                    else controller.navigate(route = screen.route, parcelableArgs = screen.parcelableArgs) {
+                    else controller.navigateTo(screen) {
                         if (screen.popBackStack) {
                             controller.popBackStack()
                         }

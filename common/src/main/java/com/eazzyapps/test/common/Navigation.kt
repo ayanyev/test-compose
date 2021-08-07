@@ -29,3 +29,10 @@ fun NavController.navigate(
         }
     navigate(route, builder)
 }
+
+fun NavController.navigateTo(
+    screen: Screen,
+    builder: NavOptionsBuilder.() -> Unit = {}
+) {
+    navigate(screen.routeWithArgs, screen.parcelableArgs, builder)
+}

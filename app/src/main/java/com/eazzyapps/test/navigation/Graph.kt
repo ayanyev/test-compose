@@ -13,9 +13,9 @@ import com.eazzyapps.repositories.ui.navigation.RepositoryScreen
 
 @Composable
 fun AppNavHost(controller: NavHostController) {
-    NavHost(navController = controller, startDestination = RepositoryScreen.RepoList.route) {
+    NavHost(navController = controller, startDestination = RepositoryScreen.RepoListScreen.route) {
         composable(
-            route = RepositoryScreen.RepoList.route,
+            route = RepositoryScreen.RepoListScreen.route,
             arguments = listOf(
                 navArgument("label") {
                     type = NavType.StringType
@@ -25,11 +25,14 @@ fun AppNavHost(controller: NavHostController) {
             content = { MainScreen() }
         )
         composable(
-            route = "repos/details",
+            route = RepositoryScreen.RepoDetailsScreen.route,
             arguments = listOf(
                 navArgument("label") {
                     type = NavType.StringType
                     defaultValue = "Details"
+                },
+                navArgument("repoId") {
+                    type = NavType.IntType
                 }
             ),
             content = {
