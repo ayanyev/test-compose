@@ -14,3 +14,7 @@ FROM CommitInfoLocal;
 insert:
 INSERT INTO CommitInfoLocal
 VALUES ?;
+
+deleteAll:
+DELETE
+FROM CommitInfoLocal;

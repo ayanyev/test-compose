@@ -17,9 +17,9 @@ class RepositoryImpl(
     private val dispatcher: CoroutineDispatcher
 ) : Repository {
 
-    private val repoQueries = db.githubRepoDbQueries
+    private val repoQueries = db.githubRepoTableQueries
 
-    private val commitQueries = db.commitInfoQueries
+    private val commitQueries = db.commitInfoTableQueries
 
     override suspend fun getRepositoryById(id: Int): GitHubRepo =
         withContext(dispatcher) {
@@ -37,9 +37,9 @@ class RepositoryImpl(
         }
 
     private suspend fun fetchRemoteRepositories(owner: String) {
-        client.getPublicRepositories(owner).toLocal().also { remotes ->
+        client.getPublicRepositories(owner).also { remotes ->
             db.transaction {
-                remotes.forEach { repoQueries.insert(it) }
+                remotes.forEach { repoQueries.insert(it.toLocal()) }
             }
         }
     }

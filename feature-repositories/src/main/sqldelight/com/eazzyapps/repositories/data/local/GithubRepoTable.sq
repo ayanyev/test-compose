@@ -23,3 +23,7 @@ WHERE id=?;
 insert:
 INSERT INTO GitHubRepoLocal
 VALUES ?;
+
+deleteAll:
+DELETE
+FROM GitHubRepoLocal;

@@ -8,6 +8,7 @@ import com.eazzyapps.repositories.domain.Repository
 import com.eazzyapps.repositories.ui.viewmodels.DetailsViewModel
 import com.eazzyapps.repositories.ui.viewmodels.RepoListViewModel
 import com.squareup.sqldelight.android.AndroidSqliteDriver
+import com.squareup.sqldelight.db.SqlDriver
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -17,9 +18,15 @@ val repositoryModule = module {
 
     single { RemoteClient.create(RepoClient::class.java) }
 
-    single { AndroidSqliteDriver(Database.Schema, androidApplication(), "test.db") }
+    single<SqlDriver> { AndroidSqliteDriver(Database.Schema, androidApplication(), "test.db") }
 
-    factory { Database(get()) }
+    single {
+        Database(get()).apply {
+            // clear tables on app start
+            githubRepoTableQueries.deleteAll()
+            commitInfoTableQueries.deleteAll()
+        }
+    }
 
     factory { Dispatchers.IO }
 
@@ -27,6 +34,6 @@ val repositoryModule = module {
 
     viewModel { RepoListViewModel(get(), get()) }
 
-    viewModel { repo -> DetailsViewModel(repo = repo.get(), get(), get()) }
+    viewModel { repoId -> DetailsViewModel(repoId.get(), get(), get()) }
 
 }
