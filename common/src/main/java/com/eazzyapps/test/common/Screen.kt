@@ -7,13 +7,13 @@ abstract class Screen {
     abstract val route: String
     abstract val popBackStack: Boolean
 
-    private var routeArgs = listOf<Any>()
+    private var routeArgs = listOf<String>()
 
     var parcelableArgs = mapOf<String, Parcelable>()
         private set
 
     fun withRouteArgs(vararg args: Any): Screen {
-        routeArgs = listOf(args)
+        routeArgs = args.map { "$it" }
         return this
     }
 
@@ -25,12 +25,12 @@ abstract class Screen {
     val routeWithArgs: String
         get() {
             var result = route
-            val regex = Regex.fromLiteral("({\\w+})")
-            val placeHolders = regex.findAll(route).toList()
+            val placeHolders = Regex("(\\{\\w+\\})").findAll(route).toList()
             val argsIterator = routeArgs.iterator()
             placeHolders.forEach {
                 if (argsIterator.hasNext()) {
-                    result = result.replaceRange(it.range, "${argsIterator.next()}")
+                    val arg = argsIterator.next()
+                    result = result.replaceRange(it.range, "${arg}")
                 } else {
                     throw Exception(
                         "Number of arguments (${routeArgs.size}) " +

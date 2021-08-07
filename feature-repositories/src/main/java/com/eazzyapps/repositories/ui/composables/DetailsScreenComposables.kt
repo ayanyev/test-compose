@@ -19,9 +19,9 @@ import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun DetailsScreen(repo: GitHubRepo) {
+fun DetailsScreen(repoId: Int) {
 
-    val vm = getViewModel<DetailsViewModel> { parametersOf(repo) }
+    val vm = getViewModel<DetailsViewModel> { parametersOf(repoId) }
 
     val info by vm.info.collectAsState()
 

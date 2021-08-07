@@ -35,11 +35,11 @@ fun AppNavHost(controller: NavHostController) {
                     type = NavType.IntType
                 }
             ),
-            content = {
-                val repo = checkNotNull(
-                    controller.previousBackStackEntry?.arguments?.getParcelable<GitHubRepo>("repo")
+            content = { backStackEntry ->
+                val repoId = checkNotNull(
+                    backStackEntry.arguments?.getInt("repoId")
                 )
-                DetailsScreen(repo)
+                DetailsScreen(repoId)
             }
         )
     }
