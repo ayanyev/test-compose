@@ -7,9 +7,10 @@ name TEXT NOT NULL,
 message TEXT NOT NULL
 );
 
-selectAll:
+selectByRepoId:
 SELECT *
-FROM CommitInfoLocal;
+FROM CommitInfoLocal
+WHERE repoId=?;
 
 insert:
 INSERT INTO CommitInfoLocal

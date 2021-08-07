@@ -48,10 +48,10 @@ class RepositoryImpl(
     // for pagination used next page link from response headers
     override suspend fun getRepositoryCommits(repo: GitHubRepo): List<CommitInfo> =
         withContext(dispatcher) {
-            var commits = commitQueries.selectAll().executeAsList()
+            var commits = commitQueries.selectByRepoId(repo.id.toLong()).executeAsList()
             if (commits.isEmpty()) {
                 fetchRemoteRepositoryCommits(repo)
-                commits = commitQueries.selectAll().executeAsList()
+                commits = commitQueries.selectByRepoId(repo.id.toLong()).executeAsList()
             }
             commits.toDomain()
         }
