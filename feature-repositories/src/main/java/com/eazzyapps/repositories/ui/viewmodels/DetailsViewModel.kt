@@ -30,6 +30,7 @@ class DetailsViewModel(
 
         launch {
             repository.getRepositoryById(repoId).also { repo ->
+                infoFlow.value = Info(repo)
                 commitsVm.setRepository(repo)
             }
         }
