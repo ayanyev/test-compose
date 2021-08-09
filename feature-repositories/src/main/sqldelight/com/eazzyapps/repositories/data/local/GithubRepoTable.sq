@@ -1,5 +1,5 @@
 CREATE TABLE GitHubRepoLocal (
-id INTEGER NOT NULL,
+id INTEGER NOT NULL PRIMARY KEY ON CONFLICT REPLACE,
 description TEXT,
 license TEXT,
 createdAt TEXT,
