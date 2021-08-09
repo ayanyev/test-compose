@@ -18,6 +18,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemsIndexed
 import com.eazzyapps.repositories.R
 import com.eazzyapps.repositories.domain.fakeRepository
 import com.eazzyapps.repositories.ui.theme.typography
@@ -30,7 +33,7 @@ fun MainScreen() {
 
     val vm = getViewModel<RepoListViewModel>()
 
-    val repos by vm.reposFlow.collectAsState()
+    val repos = vm.reposFlow.collectAsLazyPagingItems()
 
     Box(Modifier.fillMaxSize()) {
         ReposList(repos = repos)
@@ -39,14 +42,15 @@ fun MainScreen() {
 }
 
 @Composable
-fun ReposList(repos: List<RepoItemViewModel>) {
+fun ReposList(repos: LazyPagingItems<RepoItemViewModel>) {
 
     val listState = rememberLazyListState()
 
     LazyColumn(Modifier.fillMaxSize().testTag("repoList"), state = listState) {
         itemsIndexed(repos) { i, repo ->
+            if (repo == null) return@itemsIndexed
             RepoItem(repo = repo)
-            if (i < repos.lastIndex) {
+            if (i < repos.itemCount) {
                 Divider()
             }
         }
@@ -76,7 +80,7 @@ fun RepoItem(repo: RepoItemViewModel) {
     }
 }
 
-@Preview
+/*@Preview
 @Composable
 fun ReposListPreview() {
     ReposList(repos = listOf(
@@ -85,7 +89,7 @@ fun ReposListPreview() {
         RepoItemViewModel(fakeRepository, onClick = {})
     )
     )
-}
+}*/
 
 @Preview
 @Composable

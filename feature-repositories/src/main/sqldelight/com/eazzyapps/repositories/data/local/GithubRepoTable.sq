@@ -11,9 +11,13 @@ stargazersCount INTEGER NOT NULL,
 watchersCount INTEGER NOT NULL
 );
 
-selectAll:
+countRepositories:
+SELECT count(*) FROM GitHubRepoLocal;
+
+select:
 SELECT *
-FROM GitHubRepoLocal;
+FROM GitHubRepoLocal
+LIMIT :limit OFFSET :offset;
 
 selectById:
 SELECT *
