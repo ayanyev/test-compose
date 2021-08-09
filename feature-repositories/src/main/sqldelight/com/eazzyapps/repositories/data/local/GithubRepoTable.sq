@@ -8,7 +8,9 @@ ownerLogin TEXT NOT NULL,
 authorAvatarUrl TEXT NOT NULL,
 forksCount INTEGER NOT NULL,
 stargazersCount INTEGER NOT NULL,
-watchersCount INTEGER NOT NULL
+watchersCount INTEGER NOT NULL,
+nextKey INTEGER,
+prevKey INTEGER
 );
 
 countRepositories:
@@ -21,6 +23,11 @@ LIMIT :limit OFFSET :offset;
 
 selectById:
 SELECT *
+FROM GitHubRepoLocal
+WHERE id=?;
+
+remoteKeys:
+SELECT id, nextKey, prevKey
 FROM GitHubRepoLocal
 WHERE id=?;
 

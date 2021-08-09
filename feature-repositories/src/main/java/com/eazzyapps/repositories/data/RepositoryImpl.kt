@@ -3,6 +3,7 @@ package com.eazzyapps.repositories.data
 import androidx.paging.*
 import com.eazzyapps.repositories.Database
 import com.eazzyapps.repositories.data.local.GitHubRepoLocal
+import com.eazzyapps.repositories.data.local.RemoteKeys
 import com.eazzyapps.repositories.data.local.models.toDomain
 import com.eazzyapps.repositories.data.remote.retrofit.RepoClient
 import com.eazzyapps.repositories.data.remote.retrofit.models.CommitInfoDto
@@ -14,11 +15,9 @@ import com.squareup.sqldelight.android.paging3.QueryPagingSource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
-import kotlin.coroutines.coroutineContext
 
 class RepositoryImpl(
     private val db: Database,
@@ -32,16 +31,9 @@ class RepositoryImpl(
 
     private lateinit var repositoriesOwner: String
 
-    private var currentPage = 1
-
-    private var isLastPage = false
-
     override fun getPagedPublicRepositories(owner: String): Flow<PagingData<GitHubRepo>> {
         repositoriesOwner = owner
         return pager.flow.map { data -> data.map { it.toDomain() } }
-            .onEach {
-                currentPage++
-            }
     }
 
     override suspend fun getRepositoryById(id: Int): GitHubRepo =
@@ -67,37 +59,65 @@ class RepositoryImpl(
 
     override suspend fun load(loadType: LoadType, state: PagingState<Long, GitHubRepoLocal>): MediatorResult {
 
-        val startPage = 1
-
-        val lastNotEmptyPage = state.pages.lastOrNull { it.data.isNotEmpty() }
-
-        val nextPage = when {
-            lastNotEmptyPage != null -> if (!isLastPage) currentPage + 1 else null
-            else -> startPage
-        }
-
         val page = when (loadType) {
 
-            LoadType.REFRESH -> startPage
+            LoadType.REFRESH -> {
+                val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
+                remoteKeys?.nextKey?.minus(1) ?: 1
+            }
 
-            LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
+            LoadType.PREPEND -> {
+                val remoteKeys = getRemoteKeyForFirstItem(state)
+                val prevKey = remoteKeys?.prevKey
+                    ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
+                prevKey
+            }
 
-            LoadType.APPEND -> nextPage ?: return MediatorResult.Success(endOfPaginationReached = true)
+            LoadType.APPEND -> {
+                val remoteKeys = getRemoteKeyForLastItem(state)
+                val nextKey = remoteKeys?.nextKey
+                    ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
+                nextKey
+            }
 
         }
 
         val pageSize = state.config.pageSize
+
         return try {
-            val remotes = client.getPublicRepositories(repositoriesOwner, pageSize, page)
+
+            val remotes = client.getPublicRepositories(repositoriesOwner, pageSize, page.toInt())
+
+            val isLastPage = remotes.size < pageSize
+
             db.transaction {
-                remotes.forEach { repoQueries.insert(it.toLocal()) }
+                val nextKey = if (isLastPage) null else  page + 1
+                val prevKey = if (page == 1L) null else page - 1
+                remotes.forEach { repoQueries.insert(it.toLocal(nextKey, prevKey)) }
             }
-            isLastPage = remotes.size < pageSize
+
             MediatorResult.Success(endOfPaginationReached = isLastPage)
+
         } catch (exception: IOException) {
             MediatorResult.Error(exception)
         } catch (exception: HttpException) {
             MediatorResult.Error(exception)
+        }
+    }
+
+    private fun getRemoteKeyForLastItem(state: PagingState<Long, GitHubRepoLocal>): RemoteKeys? {
+        return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()
+            ?.let { repo -> repoQueries.remoteKeys(repo.id).executeAsOne() }
+    }
+
+    private fun getRemoteKeyForFirstItem(state: PagingState<Long, GitHubRepoLocal>): RemoteKeys? {
+        return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()
+            ?.let { repo -> repoQueries.remoteKeys(repo.id).executeAsOne() }
+    }
+
+    private fun getRemoteKeyClosestToCurrentPosition(state: PagingState<Long, GitHubRepoLocal>): RemoteKeys? {
+        return state.anchorPosition?.let { position -> state.closestItemToPosition(position)
+            ?.let { repo -> repoQueries.remoteKeys(repo.id).executeAsOne() }
         }
     }
 
@@ -110,11 +130,12 @@ class RepositoryImpl(
         pagingSourceFactory = { pagingSource }
     )
 
-    private val pagingSource: PagingSource<Long, GitHubRepoLocal> get() = QueryPagingSource(
-        countQuery = repoQueries.countRepositories(),
-        transacter = repoQueries,
-        queryProvider = repoQueries::select
-    )
+    private val pagingSource: PagingSource<Long, GitHubRepoLocal>
+        get() = QueryPagingSource(
+            countQuery = repoQueries.countRepositories(),
+            transacter = repoQueries,
+            queryProvider = repoQueries::select
+        )
 
     private suspend fun fetchRemoteRepositoryCommits(repo: GitHubRepo) {
         val commits = mutableListOf<CommitInfoDto>()

@@ -23,7 +23,7 @@ data class License(
     val name: String
 )
 
-fun GitHubRepoDto.toLocal() = GitHubRepoLocal(
+fun GitHubRepoDto.toLocal(next: Long?, prev: Long?) = GitHubRepoLocal(
     id = id.toLong(),
     authorName = name,
     description = description,
@@ -33,7 +33,10 @@ fun GitHubRepoDto.toLocal() = GitHubRepoLocal(
     license = license?.name,
     forksCount = forks_count.toLong(),
     stargazersCount = stargazers_count.toLong(),
-    watchersCount = watchers_count.toLong()
+    watchersCount = watchers_count.toLong(),
+    nextKey = next,
+    prevKey = prev
+
 )
 
-fun List<GitHubRepoDto>.toLocal() = map { it.toLocal() }
+fun List<GitHubRepoDto>.toLocal(next: Long?, prev: Long?) = map { it.toLocal(next, prev) }
