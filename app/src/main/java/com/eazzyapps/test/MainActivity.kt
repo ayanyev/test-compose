@@ -13,10 +13,10 @@ import androidx.navigation.compose.rememberNavController
 import com.eazzyapps.repositories.ui.theme.AppTheme
 import com.eazzyapps.test.common.ActivityDelegate
 import com.eazzyapps.test.common.Previous
+import com.eazzyapps.test.common.ProgressIndicator
 import com.eazzyapps.test.common.navigateTo
 import com.eazzyapps.test.navigation.AppNavHost
 import com.eazzyapps.test.ui.AppTopBar
-import com.eazzyapps.test.ui.ProgressIndicator
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
                             scaffoldState = scaffoldState,
                             content = { AppNavHost(controller) }
                         )
-                        ProgressIndicator(isLoading)
+                        ProgressIndicator(Modifier.fillMaxSize(), isLoading)
                     }
                 }
             }

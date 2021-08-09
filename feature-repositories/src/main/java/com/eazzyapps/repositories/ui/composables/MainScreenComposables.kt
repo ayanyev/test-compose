@@ -3,14 +3,11 @@ package com.eazzyapps.repositories.ui.composables
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -18,6 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
@@ -26,35 +24,63 @@ import com.eazzyapps.repositories.domain.fakeRepository
 import com.eazzyapps.repositories.ui.theme.typography
 import com.eazzyapps.repositories.ui.viewmodels.RepoListViewModel
 import com.eazzyapps.repositories.ui.viewmodels.RepoItemViewModel
+import com.eazzyapps.test.common.Message
+import com.eazzyapps.test.common.ProgressIndicator
 import org.koin.androidx.compose.getViewModel
+import java.lang.Exception
 
 @Composable
 fun MainScreen() {
 
     val vm = getViewModel<RepoListViewModel>()
 
-    val repos = vm.reposFlow.collectAsLazyPagingItems()
+    val lazyRepoItems = vm.reposFlow.collectAsLazyPagingItems()
 
     Box(Modifier.fillMaxSize()) {
-        ReposList(repos = repos)
+        ReposList(lazyRepoItems = lazyRepoItems)
+    }
+
+    lazyRepoItems.loadState.apply {
+        if (refresh is LoadState.Error || append is LoadState.Error) {
+            vm.showMessage(Message.SnackBar(R.string.pagination_error))
+        }
     }
 
 }
 
 @Composable
-fun ReposList(repos: LazyPagingItems<RepoItemViewModel>) {
+fun ReposList(lazyRepoItems: LazyPagingItems<RepoItemViewModel>) {
 
     val listState = rememberLazyListState()
 
-    LazyColumn(Modifier.fillMaxSize().testTag("repoList"), state = listState) {
-        itemsIndexed(repos) { i, repo ->
+    LazyColumn(
+        Modifier
+            .fillMaxSize()
+            .testTag("repoList"), state = listState
+    ) {
+        itemsIndexed(lazyRepoItems) { i, repo ->
             if (repo == null) return@itemsIndexed
             RepoItem(repo = repo)
-            if (i < repos.itemCount) {
+            if (i < lazyRepoItems.itemCount) {
                 Divider()
             }
         }
     }
+
+    val ls = lazyRepoItems.loadState
+
+    ProgressIndicator(
+        modifier = when {
+            ls.refresh == LoadState.Loading -> Modifier.fillMaxSize()
+            ls.append == LoadState.Loading -> Modifier.height(64.dp).fillMaxWidth()
+            else -> Modifier
+        },
+        isLoading = when {
+            ls.refresh == LoadState.Loading -> true
+            ls.append == LoadState.Loading -> true
+            else -> false
+        }
+    )
 }
 
 @Composable
@@ -68,11 +94,20 @@ fun RepoItem(repo: RepoItemViewModel) {
             .clickable { repo.doOnClick() }
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Icon(painter = painterResource(id = R.drawable.watch), stringResource(R.string.cont_desc_icon_watchers))
+            Icon(
+                painter = painterResource(id = R.drawable.watch),
+                stringResource(R.string.cont_desc_icon_watchers)
+            )
             Text(modifier = Modifier.padding(horizontal = 4.dp), text = repo.watchersCount)
-            Icon(painter = painterResource(id = R.drawable.star), stringResource(R.string.cont_desc_icon_stars))
+            Icon(
+                painter = painterResource(id = R.drawable.star),
+                stringResource(R.string.cont_desc_icon_stars)
+            )
             Text(modifier = Modifier.padding(horizontal = 4.dp), text = repo.starsCount)
-            Icon(painter = painterResource(id = R.drawable.fork), stringResource(R.string.cont_desc_icon_forks))
+            Icon(
+                painter = painterResource(id = R.drawable.fork),
+                stringResource(R.string.cont_desc_icon_forks)
+            )
             Text(modifier = Modifier.padding(horizontal = 4.dp), text = repo.forksCount)
         }
         Text(text = repo.name, style = typography.h6)

@@ -14,6 +14,7 @@ import com.squareup.sqldelight.android.paging3.QueryPagingSource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
@@ -31,9 +32,16 @@ class RepositoryImpl(
 
     private lateinit var repositoriesOwner: String
 
+    private var currentPage = 1
+
+    private var isLastPage = false
+
     override fun getPagedPublicRepositories(owner: String): Flow<PagingData<GitHubRepo>> {
         repositoriesOwner = owner
         return pager.flow.map { data -> data.map { it.toDomain() } }
+            .onEach {
+                currentPage++
+            }
     }
 
     override suspend fun getRepositoryById(id: Int): GitHubRepo =
@@ -58,14 +66,34 @@ class RepositoryImpl(
         }
 
     override suspend fun load(loadType: LoadType, state: PagingState<Long, GitHubRepoLocal>): MediatorResult {
-        val page = state.pages.size + 1
+
+        val startPage = 1
+
+        val lastNotEmptyPage = state.pages.lastOrNull { it.data.isNotEmpty() }
+
+        val nextPage = when {
+            lastNotEmptyPage != null -> if (!isLastPage) currentPage + 1 else null
+            else -> startPage
+        }
+
+        val page = when (loadType) {
+
+            LoadType.REFRESH -> startPage
+
+            LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
+
+            LoadType.APPEND -> nextPage ?: return MediatorResult.Success(endOfPaginationReached = true)
+
+        }
+
         val pageSize = state.config.pageSize
         return try {
             val remotes = client.getPublicRepositories(repositoriesOwner, pageSize, page)
             db.transaction {
                 remotes.forEach { repoQueries.insert(it.toLocal()) }
             }
-            MediatorResult.Success(endOfPaginationReached = remotes.size < pageSize)
+            isLastPage = remotes.size < pageSize
+            MediatorResult.Success(endOfPaginationReached = isLastPage)
         } catch (exception: IOException) {
             MediatorResult.Error(exception)
         } catch (exception: HttpException) {
@@ -82,7 +110,7 @@ class RepositoryImpl(
         pagingSourceFactory = { pagingSource }
     )
 
-    private val pagingSource: PagingSource<Long, GitHubRepoLocal> = QueryPagingSource(
+    private val pagingSource: PagingSource<Long, GitHubRepoLocal> get() = QueryPagingSource(
         countQuery = repoQueries.countRepositories(),
         transacter = repoQueries,
         queryProvider = repoQueries::select

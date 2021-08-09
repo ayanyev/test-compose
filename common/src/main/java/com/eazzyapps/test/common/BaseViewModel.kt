@@ -28,6 +28,12 @@ abstract class BaseViewModel(
         )
     }
 
+    fun showMessage(msg: Message) {
+        launch {
+            delegate.showMessage(msg)
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         cancel()

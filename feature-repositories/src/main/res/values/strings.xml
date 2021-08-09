@@ -10,4 +10,5 @@
     <string name="cont_desc_icon_watchers">watchers count</string>
     <string name="cont_desc_icon_stars">stars count</string>
     <string name="cont_desc_icon_forks">forks count</string>
+    <string name="pagination_error">Pagination error</string>
 </resources>
