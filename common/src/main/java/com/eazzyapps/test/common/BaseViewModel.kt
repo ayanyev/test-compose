@@ -15,8 +15,9 @@ abstract class BaseViewModel(
         launch { handleError(throwable) }
     }
 
-    override val coroutineContext: CoroutineContext
-        get() = viewModelScope.plus(SupervisorJob()).plus(handler).coroutineContext
+    override val coroutineContext: CoroutineContext by lazy {
+        viewModelScope.plus(handler).coroutineContext
+    }
 
     open suspend fun handleError(e: Throwable) {
         delegate.showLoading(false)
@@ -30,7 +31,7 @@ abstract class BaseViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        cancel()
         launch { delegate.showLoading(false) }
+        coroutineContext.cancelChildren()
     }
 }
