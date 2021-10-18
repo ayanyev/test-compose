@@ -1,7 +1,7 @@
 ### Introduction
 
-This work is based on other project, so initial (first commit) and final implementation are
-completely different and can be examined separately.
+This is a playground application. No serious UI design envolved. Used to try some new technologies
+and also during intrview processes.
 
 ### Hint for testers
 
