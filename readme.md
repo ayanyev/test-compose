@@ -1,7 +1,7 @@
 ### Introduction
 
-This is a playground application. No serious UI design envolved. Used to try some new technologies
-and also during intrview processes.
+This is a playground application. No serious UI design envolved. 
+Used to try some new technologies and also during intrview processes.
 
 ### Hint for testers
 
