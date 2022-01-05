@@ -25,12 +25,12 @@ abstract class Screen {
     val routeWithArgs: String
         get() {
             var result = route
-            val placeHolders = Regex("(\\{\\w+\\})").findAll(route).toList()
+            val placeHolders = Regex("""(\{\w+\})""".trimIndent()).findAll(route).toList()
             val argsIterator = routeArgs.iterator()
             placeHolders.forEach {
                 if (argsIterator.hasNext()) {
                     val arg = argsIterator.next()
-                    result = result.replaceRange(it.range, "${arg}")
+                    result = result.replaceRange(it.range, arg)
                 } else {
                     throw Exception(
                         "Number of arguments (${routeArgs.size}) " +

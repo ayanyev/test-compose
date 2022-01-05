@@ -9,6 +9,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.whenCreated
 import androidx.navigation.compose.rememberNavController
 import com.eazzyapps.repositories.ui.theme.AppTheme
 import com.eazzyapps.test.common.ActivityDelegate
@@ -50,9 +51,9 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            scope.launchWhenResumed {
-                delegate.msgFlow.collect {
-                    launch {
+            scope.launch {
+                whenCreated {
+                    delegate.msgFlow.collect {
                         // launch in another coroutine
                         // to avoid waiting showSnackbar returning result
                         scaffoldState.snackbarHostState.apply {
@@ -63,15 +64,16 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-
-            scope.launchWhenResumed {
-                delegate.navFlow.collect { screen ->
-                    // dismiss current snackbar before navigate
-                    scaffoldState.snackbarHostState.currentSnackbarData?.dismiss()
-                    if (screen is Previous) controller.navigateUp()
-                    else controller.navigateTo(screen) {
-                        if (screen.popBackStack) {
-                            controller.popBackStack()
+            scope.launch {
+                whenCreated {
+                    delegate.navFlow.collect { screen ->
+                        // dismiss current snackbar before navigate
+                        scaffoldState.snackbarHostState.currentSnackbarData?.dismiss()
+                        if (screen is Previous) controller.navigateUp()
+                        else controller.navigateTo(screen) {
+                            if (screen.popBackStack) {
+                                controller.popBackStack()
+                            }
                         }
                     }
                 }
